@@ -1,45 +1,26 @@
 import os
 import shutil
-import sys
 
 def copy_files(source_dir, destination_dir):
-    for root, dirs, files in os.walk(source_dir):
-        for file in files:
-            source_path = os.path.join(root, file)
-            extension = os.path.splitext(file)[1].strip('.')
-            destination_path = os.path.join(destination_dir, extension)
-            if not os.path.exists(destination_path):
-                os.makedirs(destination_path)
-            try:
-                shutil.copy(source_path, destination_path)
-                print(f"File '{file}' copied to '{destination_path}'")
-            except IOError as e:
-                print(f"Unable to copy file '{file}': {e}")
-
-def recursive_copy(source_dir, destination_dir):
     for item in os.listdir(source_dir):
         item_path = os.path.join(source_dir, item)
         if os.path.isdir(item_path):
-            recursive_copy(item_path, destination_dir)
+            copy_files(item_path, destination_dir)  # Рекурсивно викликаємо функцію для піддиректорії
         else:
-            copy_files(source_dir, destination_dir)
+            shutil.copy(item_path, destination_dir)  # Копіюємо файл у директорію призначення
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python script.py <source_directory> [<destination_directory>]")
-        sys.exit(1)
-
-    source_dir = sys.argv[1]
-    destination_dir = sys.argv[2] if len(sys.argv) > 2 else 'dist'
+    source_dir = input("Enter the source directory: ")
+    destination_dir = input("Enter the destination directory: ")
 
     if not os.path.exists(source_dir):
         print(f"Source directory '{source_dir}' does not exist.")
-        sys.exit(1)
+        return
 
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
 
-    recursive_copy(source_dir, destination_dir)
+    copy_files(source_dir, destination_dir)
 
 if __name__ == "__main__":
     main()
