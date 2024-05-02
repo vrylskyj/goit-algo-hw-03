@@ -16,6 +16,14 @@ def copy_files(source_dir, destination_dir):
             except IOError as e:
                 print(f"Unable to copy file '{file}': {e}")
 
+def recursive_copy(source_dir, destination_dir):
+    for item in os.listdir(source_dir):
+        item_path = os.path.join(source_dir, item)
+        if os.path.isdir(item_path):
+            recursive_copy(item_path, destination_dir)
+        else:
+            copy_files(source_dir, destination_dir)
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: python script.py <source_directory> [<destination_directory>]")
@@ -31,7 +39,7 @@ def main():
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
 
-    copy_files(source_dir, destination_dir)
+    recursive_copy(source_dir, destination_dir)
 
 if __name__ == "__main__":
     main()
